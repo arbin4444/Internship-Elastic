@@ -16,7 +16,7 @@ import { CommonButton } from "../commonComponents/CommonButton";
 import { CommonFlyout } from "../commonComponents/CommonFlyout";
 import { CommonTable } from "../commonComponents/CommonTable";
 import { CommonIconButton } from "../commonComponents/CommonIconButton";
-
+import {CommonToast} from "../commonComponents/CommonToast";
 interface ComboBoxOption {
   label: string;
 }
@@ -285,6 +285,7 @@ export const DetailForm:React.FC = () => {
     //   setPageIndex(pageIndex);
     //   setPageSize(pageSize);
     // }
+    handleAddToast();
   };
 
   //for Details Flyout
@@ -356,20 +357,69 @@ export const DetailForm:React.FC = () => {
           <CommonTextArea
             value={editUserDetails.userDescription}
             onChange={handleEditUserDescription}
-            placeholder="Description Area" isClearable={false}          />
+            placeholder="Description Area" isClearable={false}/>
         }
         close={
           <CommonButton
             title="Close"
             iconType="cross"
+            color="danger"
             onClick={() => setEditDetailFlyout(false)}/>
         }
         update={
-          <CommonButton title="Update" onClick={handleUpdateUserDetails}/>
+          <CommonButton title="Update" color="primary" onClick={handleUpdateUserDetails}/>
         }
       ></CommonFlyout>
     );
   }
+
+
+  //For Toast
+
+  let toastId = 0;
+
+  interface Toast {
+  id: string;
+  title: string;
+  color: string;
+  text: any;
+
+  }
+
+  const [toasts,setToast]=useState<Toast[]>([]);
+
+  const handleAddToast =()=>{
+    const toast = getToast();
+    setToast(toasts.concat(toast));
+  }
+  const removeToast=(id:string)=>{
+    setToast((toasts)=>
+       toasts.filter((toast)=>toast.id !== id)
+    )
+  }
+
+
+  const getToast =()=>{
+    const toasts= [
+      {
+        title : "Submitted Successfully",
+        color : "success",
+        text : <p>Your data is submitted successfully</p>
+      },
+      {
+        title : "oops! sorry",
+        color : "danger",
+        text : <p>maybe you entered wrong data</p>
+      }
+    ];
+    return {
+      id: `toast${toastId++}`,
+      ...toasts[Math.floor(Math.random()* toasts.length)],
+    };
+  };
+   
+
+
 
   return (
     <>
@@ -383,7 +433,7 @@ export const DetailForm:React.FC = () => {
             <EuiFlexItem grow={false}>
               <EuiText className="textName">Name :</EuiText>
             </EuiFlexItem>
-            <EuiFlexItem className="textiInputField">
+            <EuiFlexItem className="textiInputField" grow={false}>
               <CommonInputField
                 value={inputName}
                 onChange={handleChangeName}
@@ -453,6 +503,7 @@ export const DetailForm:React.FC = () => {
               <div>
                 <CommonButton
                   title="Next"
+                  color="primary"
                   onClick={() => setDetailFlyout(true)}
                 />
               </div>
@@ -481,6 +532,11 @@ export const DetailForm:React.FC = () => {
           />
         </EuiFlexItem>
       </EuiFlexGroup>
+      <CommonToast
+        toasts={toasts}
+        dismissToast={removeToast}
+        toastLifeTimeMs={1000}
+      />
     </>
   );
 };
