@@ -1,5 +1,6 @@
 import {
   EuiConfirmModal,
+  EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
   EuiSpacer,
@@ -16,24 +17,31 @@ import { CommonButton } from "../commonComponents/CommonButton";
 import { CommonFlyout } from "../commonComponents/CommonFlyout";
 import { CommonTable } from "../commonComponents/CommonTable";
 import { CommonIconButton } from "../commonComponents/CommonIconButton";
-import {CommonToast} from "../commonComponents/CommonToast";
+import { CommonToast } from "../commonComponents/CommonToast";
+import { CommonSearchField } from "../commonComponents/CommonSearchField";
+
 interface ComboBoxOption {
   label: string;
 }
 
 interface UserDetail {
-  id : number;
-  userName :string;
-  userService:string[];
-  userRetire :string;
-  userDescription:string;
+  id: number;
+  userName: string;
+  userService: string[];
+  userRetire: string;
+  userDescription: string;
 }
 
+interface Toast {
+  id: string;
+  title: string;
+  color: string;
+  text: any;
+  toastLifeTimeMs?: number;
+}
 
-
-
-export const DetailForm:React.FC = () => {
-  const comboBoxOptions:ComboBoxOption[] = [
+export const DetailForm: React.FC = () => {
+  const comboBoxOptions: ComboBoxOption[] = [
     { label: "1 year" },
     { label: "2 year" },
     { label: "3 year" },
@@ -44,24 +52,27 @@ export const DetailForm:React.FC = () => {
   const [checkbox, setCheckbox] = useState<boolean>(false);
   const [checkbox1, setCheckbox1] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
-  const [detailFlyout, setDetailFlyout] = useState<boolean>(false);
+  const [detailFlyout, setDetailFlyout] = useState<boolean>(false); // for flyout
   const [usersDetails, setUsersDetails] = useState<UserDetail[]>([]);
-
-  //For Switch Case
-  const [switchUser, setSwitchUser] = useState<boolean>(false);
-
-  // console.log("this is selectedOption",selectedOption)
-
-  //For Adding Pagination to the Table
-
-  const [pageIndex, setPageIndex] = useState<number>(0);
+  const [pageIndex, setPageIndex] = useState<number>(0); //Pagination
   const [pageSize, setPageSize] = useState<number>(5);
-  // const [showPerPageOptions, setShowPerPageOptions] = useState(true);
-
-  // const tooglePerPageOptions =() => setShowPerPageOptions(!showPerPageOptions)
+  const [deleteModal, setDeleteModal] = useState<boolean>(false); //for deleting table data
+  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+  const [editDetailFlyout, setEditDetailFlyout] = useState<boolean>(false); //editing table data through flyout
+  const [editOption, setEditOption] =
+    useState<ComboBoxOption[]>(comboBoxOptions);
+  const [editUserDetails, setEditUserDetails] = useState<any>(null);
+  const [switchUser, setSwitchUser] = useState<boolean>(false); //For switch Case
+  const [toasts, setToast] = useState<Toast[]>([]); // for Toast message
+  const [searchName, setSearchName] = useState<string>(""); // for searching (search field)
+  const [isClearable, setIsClearable] = useState<boolean>(true);
 
   //Manually handling pagination of data
-  const findUsers = (usersDetails:UserDetail[], pageIndex:number, pageSize:number) => {
+  const findUsers = (
+    usersDetails: UserDetail[],
+    pageIndex: number,
+    pageSize: number
+  ) => {
     let pageItems;
 
     if (!pageIndex && !pageSize) {
@@ -84,7 +95,7 @@ export const DetailForm:React.FC = () => {
     pageIndex,
     pageSize
   );
-  const handlePageChange = ({ page }:any) => {
+  const handlePageChange = ({ page }: any) => {
     if (page) {
       const { index: pageIndex, size: pageSize } = page;
       setPageIndex(pageIndex);
@@ -100,15 +111,14 @@ export const DetailForm:React.FC = () => {
   };
 
   //For Switch Case
-  const handleSwitchUserSelection = ()=>{
+  const handleSwitchUserSelection = () => {
     setSwitchUser(!switchUser);
-  }
+  };
 
   //For Delete Table Data
-  const [deleteModal, setDeleteModal] = useState<boolean>(false);
-  const [deleteUserId, setDeleteUserId] = useState<number|null>(null);
+
   const modalDeleteId = useGeneratedHtmlId();
-  const handleShowModal = (id:any) => {
+  const handleShowModal = (id: any) => {
     setDeleteUserId(id);
     setDeleteModal(true);
   };
@@ -124,9 +134,7 @@ export const DetailForm:React.FC = () => {
   };
 
   //For edit table Data using Flyout
-  const [editDetailFlyout, setEditDetailFlyout] = useState<boolean>(false);
-  const [editOption, setEditOption] = useState<ComboBoxOption[]>(comboBoxOptions);
-  const [editUserDetails, setEditUserDetails] = useState<any>(null);
+
   const basicEditChecboxId = useGeneratedHtmlId({
     prefix: "basicEditCheckbox",
   });
@@ -142,7 +150,7 @@ export const DetailForm:React.FC = () => {
   const handleEditCheckbox1 = () => {
     setEditUserDetails({ ...editUserDetails, userRetire: "No" });
   };
-  const handleEditUserDescription = (e: { target: { value: any; }; }) => {
+  const handleEditUserDescription = (e: { target: { value: any } }) => {
     setEditUserDetails({ ...editUserDetails, userDescription: e.target.value });
   };
   const handleUpdateUserDetails = () => {
@@ -213,7 +221,8 @@ export const DetailForm:React.FC = () => {
             iconType="trash"
             aria-label="Delete"
             color="danger"
-            onClick={() => handleShowModal(id)}/>
+            onClick={() => handleShowModal(id)}
+          />
           {deleteModal && (
             <EuiConfirmModal
               aria-labelledby={modalDeleteId}
@@ -234,13 +243,14 @@ export const DetailForm:React.FC = () => {
             iconType="pencil"
             aria-label="Edit"
             color="success"
-            onClick={() => handleEditFlyout(id)}/>
+            onClick={() => handleEditFlyout(id)}
+          />
         </>
       ),
     },
   ];
 
-  const handleChangeName = (e :any) => {
+  const handleChangeName = (e: any) => {
     e.preventDefault();
     setInputName(e.target.value);
   };
@@ -252,11 +262,16 @@ export const DetailForm:React.FC = () => {
     setCheckbox1(!checkbox1);
     setCheckbox(false);
   };
-  const handleChange = (selectedOption: React.SetStateAction<ComboBoxOption[]>) => {
+  const handleChange = (
+    selectedOption: React.SetStateAction<ComboBoxOption[]>
+  ) => {
     setSelectedOption(selectedOption);
   };
 
-  const handleChangeDescription = (e: { preventDefault: () => void; target: { value: React.SetStateAction<string>; }; }) => {
+  const handleChangeDescription = (e: {
+    preventDefault: () => void;
+    target: { value: React.SetStateAction<string> };
+  }) => {
     e.preventDefault();
     setDescription(e.target.value);
   };
@@ -301,7 +316,8 @@ export const DetailForm:React.FC = () => {
         name={inputName}
         service={selectedOption.map((info) => info.label)}
         retire={checkbox ? "yes" : checkbox1 ? "no" : "not selected"}
-        description={description}></CommonFlyout>
+        description={description}
+      ></CommonFlyout>
     );
   }
 
@@ -318,7 +334,7 @@ export const DetailForm:React.FC = () => {
         name={
           <CommonInputField
             value={editUserDetails.userName}
-            onChange={(e: { target: { value: any; }; }) =>
+            onChange={(e: { target: { value: any } }) =>
               setEditUserDetails({
                 ...editUserDetails,
                 userName: e.target.value,
@@ -331,9 +347,11 @@ export const DetailForm:React.FC = () => {
           <CommonComboBox
             placeholder="select options to edit"
             options={editOption}
-            selectedOptions={editUserDetails.userService.map((service: any) => ({
-              label: service,
-            }))}
+            selectedOptions={editUserDetails.userService.map(
+              (service: any) => ({
+                label: service,
+              })
+            )}
             onChange={handleEditSelectedOption}
           />
         }
@@ -357,69 +375,74 @@ export const DetailForm:React.FC = () => {
           <CommonTextArea
             value={editUserDetails.userDescription}
             onChange={handleEditUserDescription}
-            placeholder="Description Area" isClearable={false}/>
+            placeholder="Description Area"
+            isClearable={false}
+          />
         }
         close={
           <CommonButton
             title="Close"
             iconType="cross"
             color="danger"
-            onClick={() => setEditDetailFlyout(false)}/>
+            onClick={() => setEditDetailFlyout(false)}
+          />
         }
         update={
-          <CommonButton title="Update" color="primary" onClick={handleUpdateUserDetails}/>
+          <CommonButton
+            title="Update"
+            color="primary"
+            onClick={handleUpdateUserDetails}
+          />
         }
       ></CommonFlyout>
     );
   }
 
-
   //For Toast
+  // let toastId = 0;
 
-  let toastId = 0;
-
-  interface Toast {
-  id: string;
-  title: string;
-  color: string;
-  text: any;
-
-  }
-
-  const [toasts,setToast]=useState<Toast[]>([]);
-
-  const handleAddToast =()=>{
+  const handleAddToast = () => {
     const toast = getToast();
-    setToast(toasts.concat(toast));
-  }
-  const removeToast=(id:string)=>{
-    setToast((toasts)=>
-       toasts.filter((toast)=>toast.id !== id)
-    )
-  }
+    setToast((t) => [...t, toast]);
+  };
+  const removeToast = (id: string) => {
+    setToast((toasts) => toasts.filter((toast) => toast.id !== id));
+  };
 
-
-  const getToast =()=>{
-    const toasts= [
+  const getToast = () => {
+    const toasts = [
       {
-        title : "Submitted Successfully",
-        color : "success",
-        text : <p>Your data is submitted successfully</p>
+        title: "Submitted Successfully",
+        color: "success",
+        text: <p>Your data is submitted successfully</p>,
       },
       {
-        title : "oops! sorry",
-        color : "danger",
-        text : <p>maybe you entered wrong data</p>
-      }
+        title: "oops! sorry",
+        color: "danger",
+        text: <p>maybe you entered wrong data</p>,
+      },
     ];
     return {
-      id: `toast${toastId++}`,
-      ...toasts[Math.floor(Math.random()* toasts.length)],
+      id: `toast${Date.now()}`,
+      ...toasts[Math.floor(Math.random() * toasts.length)],
     };
   };
-   
 
+  //For search Table Data
+  const handleChangeSearchName = (e: {
+    preventDefault: () => void;
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    e.preventDefault();
+    setSearchName(e.target.value);
+  };
 
+  const handleSearchUserName = (searchName: string) => {
+    const filterSearchedName = usersDetails.filter(
+      (name) => name.userName === searchName
+    );
+    setUsersDetails([...filterSearchedName]);
+  };
 
   return (
     <>
@@ -513,15 +536,36 @@ export const DetailForm:React.FC = () => {
       </EuiFlexGroup>
       {flyout}
       {editFlyout}
-      <EuiSpacer size="xl"/>
-      <EuiFlexGroup>
-        <EuiFlexItem>
+      <EuiSpacer size="xl" />
+      <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
+        <EuiFlexItem grow={2}>
           <EuiSwitch
             label="User Selection"
             checked={switchUser}
             onChange={handleSwitchUserSelection}
           />
-          <EuiSpacer size="s"/>
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <CommonSearchField
+            placeholder="Search by name"
+            value={searchName}
+            isClearable={isClearable}
+            onChange={handleChangeSearchName}
+          />
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <div>
+            <CommonButton
+              title="search"
+              color="primary"
+              onClick={() => handleSearchUserName(searchName)}
+            />
+          </div>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+      <EuiSpacer size="s" />
+      <EuiFlexGroup>
+        <EuiFlexItem>
           <CommonTable
             tableCaption="User Details"
             items={pageItems}
@@ -534,8 +578,8 @@ export const DetailForm:React.FC = () => {
       </EuiFlexGroup>
       <CommonToast
         toasts={toasts}
-        dismissToast={removeToast}
-        toastLifeTimeMs={1000}
+        dismissToast={(toast: Toast) => removeToast(toast.id)}
+        toastLifeTimeMs={5000}
       />
     </>
   );
