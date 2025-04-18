@@ -1,6 +1,5 @@
 import {
   EuiConfirmModal,
-  EuiFieldSearch,
   EuiFlexGroup,
   EuiFlexItem,
   EuiSpacer,
@@ -19,6 +18,7 @@ import { CommonTable } from "../commonComponents/CommonTable";
 import { CommonIconButton } from "../commonComponents/CommonIconButton";
 import { CommonToast } from "../commonComponents/CommonToast";
 import { CommonSearchField } from "../commonComponents/CommonSearchField";
+import "../App.css";
 
 interface ComboBoxOption {
   label: string;
@@ -66,6 +66,7 @@ export const DetailForm: React.FC = () => {
   const [toasts, setToast] = useState<Toast[]>([]); // for Toast message
   const [searchName, setSearchName] = useState<string>(""); // for searching (search field)
   const [isClearable, setIsClearable] = useState<boolean>(true);
+  const [filteredData, setFilteredData] = useState<UserDetail[] | null>(null);
 
   //Manually handling pagination of data
   const findUsers = (
@@ -91,7 +92,7 @@ export const DetailForm: React.FC = () => {
   };
 
   const { pageItems, totalItemCount } = findUsers(
-    usersDetails,
+    filteredData ?? usersDetails,
     pageIndex,
     pageSize
   );
@@ -438,10 +439,14 @@ export const DetailForm: React.FC = () => {
   };
 
   const handleSearchUserName = (searchName: string) => {
+    if (!searchName.trim()) {
+      setFilteredData(null);
+      return;
+    }
     const filterSearchedName = usersDetails.filter(
       (name) => name.userName === searchName
     );
-    setUsersDetails([...filterSearchedName]);
+    setFilteredData([...filterSearchedName]);
   };
 
   return (
@@ -468,7 +473,7 @@ export const DetailForm: React.FC = () => {
             <EuiFlexItem grow={false}>
               <EuiText className="textName">Service Year:</EuiText>
             </EuiFlexItem>
-            <EuiFlexItem>
+            <EuiFlexItem className="itemComboBox">
               <CommonComboBox
                 placeholder="select options"
                 options={option}
@@ -481,7 +486,7 @@ export const DetailForm: React.FC = () => {
             <EuiFlexItem grow={false}>
               <EuiText className="textName1">Retire :</EuiText>
             </EuiFlexItem>
-            <EuiFlexItem grow={false}>
+            <EuiFlexItem className="yesCheckBox" grow={false}>
               <CommonCheckBox
                 id={basicCheckboxId}
                 label="yes"
@@ -502,7 +507,7 @@ export const DetailForm: React.FC = () => {
             <EuiFlexItem grow={false}>
               <EuiText>Description :</EuiText>
             </EuiFlexItem>
-            <EuiFlexItem grow={false}>
+            <EuiFlexItem>
               <CommonTextArea
                 value={description}
                 onChange={handleChangeDescription}

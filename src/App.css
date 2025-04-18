@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,20 @@
   to {
     transform: rotate(360deg);
   }
+} */
+.itemComboBox, css-9sbomz-euiFlexItem-grow-1{
+  width: 250px;
+}
+.textiInputField, css-kpsrin-euiFlexItem-growZero{
+  margin: 0 0 0 20px;
+  width: 250px;
+}
+.yesCheckBox, css-kpsrin-euiFlexItem-growZero{
+  margin : 0 0 0 23px;
+}
+.euiTableCellContent, css-ykrjwq-euiTableCellContent-euiTableHeaderCell__content{
+  font-size: 14px;
+}
+.euiTableCellContent, css-scbpvj-euiTableCellContent-wrapText{
+  font-size: 18px;
 }
