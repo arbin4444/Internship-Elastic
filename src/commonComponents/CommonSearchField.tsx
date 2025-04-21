@@ -5,7 +5,8 @@ interface CommonSearchFieldProps {
   placeholder: string;
   value: string;
   isClearable: boolean;
-  onChange: any;
+  onChange:any;
+  onSearch: any;
 }
 
 export const CommonSearchField: React.FC<CommonSearchFieldProps> = ({
@@ -13,6 +14,7 @@ export const CommonSearchField: React.FC<CommonSearchFieldProps> = ({
   value,
   isClearable,
   onChange,
+  onSearch,
 }) => {
   return (
     <>
@@ -21,6 +23,7 @@ export const CommonSearchField: React.FC<CommonSearchFieldProps> = ({
         value={value}
         isClearable={isClearable}
         onChange={onChange}
+        onSearch={onSearch}
       />
     </>
   );

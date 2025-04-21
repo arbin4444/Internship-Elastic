@@ -107,7 +107,7 @@ export const DetailForm: React.FC = () => {
     pageIndex,
     pageSize,
     totalItemCount,
-    pageSizeOptions: [5, 0],
+    pageSizeOptions: [5, 10, 15, 0],
     onChange: handlePageChange,
   };
 
@@ -556,9 +556,10 @@ export const DetailForm: React.FC = () => {
             value={searchName}
             isClearable={isClearable}
             onChange={handleChangeSearchName}
+            onSearch={() => handleSearchUserName(searchName)}
           />
         </EuiFlexItem>
-        <EuiFlexItem grow={false}>
+        {/* <EuiFlexItem grow={false}>
           <div>
             <CommonButton
               title="search"
@@ -566,7 +567,7 @@ export const DetailForm: React.FC = () => {
               onClick={() => handleSearchUserName(searchName)}
             />
           </div>
-        </EuiFlexItem>
+        </EuiFlexItem> */}
       </EuiFlexGroup>
       <EuiSpacer size="s" />
       <EuiFlexGroup>
