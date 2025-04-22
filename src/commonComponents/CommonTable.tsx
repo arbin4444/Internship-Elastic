@@ -8,6 +8,7 @@ interface CommonTableProps {
     rowHeader : string;
     pagination : Pagination;
     onChange : any;
+    selection : any;
 }
 
 export const CommonTable:React.FC<CommonTableProps>=({
@@ -16,7 +17,8 @@ export const CommonTable:React.FC<CommonTableProps>=({
     columns,
     rowHeader,
     pagination,
-    onChange
+    onChange,
+    selection,
 
 })=>{
     return(
@@ -28,6 +30,7 @@ export const CommonTable:React.FC<CommonTableProps>=({
           rowHeader = {rowHeader}
           pagination={pagination}
           onChange={onChange}
+          selection={selection}
         />
 
         

@@ -67,6 +67,7 @@ export const DetailForm: React.FC = () => {
   const [searchName, setSearchName] = useState<string>(""); // for searching (search field)
   const [isClearable, setIsClearable] = useState<boolean>(true);
   const [filteredData, setFilteredData] = useState<UserDetail[] | null>(null);
+  const [selectedUser,setSelectedUser]= useState<UserDetail[]>([]); // for Selection
 
   //Manually handling pagination of data
   const findUsers = (
@@ -449,6 +450,23 @@ export const DetailForm: React.FC = () => {
     setFilteredData([...filterSearchedName]);
   };
 
+  //For handling selection
+  const onSelectionChange=(selectedUser:UserDetail[])=>{
+      setSelectedUser(selectedUser);
+
+  };
+  const selection={
+      selectable:(user:UserDetail)=>user.userRetire,
+      selectableMessage:(selectable:string,user:UserDetail)=>
+        !selectable
+          ? `${user.userName} is selected`
+          : `select ${user.userName}`,
+      onSelectionChange,
+      
+      
+
+  }
+
   return (
     <>
       <EuiFlexGroup
@@ -579,6 +597,7 @@ export const DetailForm: React.FC = () => {
             columns={columns}
             pagination={pagination}
             onChange={handlePageChange}
+            selection={selection}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
