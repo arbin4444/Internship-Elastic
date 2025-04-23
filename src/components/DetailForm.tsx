@@ -115,6 +115,7 @@ export const DetailForm: React.FC = () => {
   //For Switch Case
   const handleSwitchUserSelection = () => {
     setSwitchUser(!switchUser);
+    selectRetiredUsers();
   };
 
   //For Delete Table Data
@@ -455,18 +456,23 @@ export const DetailForm: React.FC = () => {
       setSelectedUser(selectedUser);
 
   };
+  const getUserRetired=() => usersDetails.filter((user)=> user.userRetire==="yes");
+  
+  const selectRetiredUsers=()=>{
+    setSelectedUser(getUserRetired());
+  }
   const selection={
-      selectable:(user:UserDetail)=>user.userRetire,
-      selectableMessage:(selectable:string,user:UserDetail)=>
+      selectable:(user:UserDetail)=>user.userRetire==="yes",
+      selectableMessage:(selectable:boolean,user:UserDetail)=>
         !selectable
           ? `${user.userName} is selected`
           : `select ${user.userName}`,
       onSelectionChange,
-      
+      selected : selectedUser,
       
 
   }
-
+  console.log(usersDetails.map(user => user.userRetire));
   return (
     <>
       <EuiFlexGroup
@@ -593,6 +599,7 @@ export const DetailForm: React.FC = () => {
           <CommonTable
             tableCaption="User Details"
             items={pageItems}
+            itemId="id"
             rowHeader="userName"
             columns={columns}
             pagination={pagination}

@@ -4,6 +4,7 @@ import React from 'react'
 interface CommonTableProps {
     tableCaption : string;
     items : any;
+    itemId: any;
     columns : any;
     rowHeader : string;
     pagination : Pagination;
@@ -14,6 +15,7 @@ interface CommonTableProps {
 export const CommonTable:React.FC<CommonTableProps>=({
     tableCaption,
     items,
+    itemId,
     columns,
     rowHeader,
     pagination,
@@ -26,6 +28,7 @@ export const CommonTable:React.FC<CommonTableProps>=({
         <EuiBasicTable
           tableCaption={tableCaption}
           items = {items}
+          itemId={itemId}
           columns={columns}
           rowHeader = {rowHeader}
           pagination={pagination}
