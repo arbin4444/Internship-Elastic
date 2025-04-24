@@ -113,9 +113,15 @@ export const DetailForm: React.FC = () => {
   };
 
   //For Switch Case
-  const handleSwitchUserSelection = () => {
-    setSwitchUser(!switchUser);
-    selectRetiredUsers();
+  const handleSwitchUserSelection = (e: { target: { checked: any; }; }) => {
+    const changeable= e.target.checked;
+    setSwitchUser(changeable);
+    // if (changeable){
+    //   selectRetiredUsers(); 
+    // }
+    // else{
+    //   clearSelectedUser();
+    // }
   };
 
   //For Delete Table Data
@@ -456,13 +462,16 @@ export const DetailForm: React.FC = () => {
       setSelectedUser(selectedUser);
 
   };
-  const getUserRetired=() => usersDetails.filter((user)=> user.userRetire==="yes");
+  const getUserRetired=() => usersDetails.filter((user)=> user.userRetire);
   
   const selectRetiredUsers=()=>{
     setSelectedUser(getUserRetired());
   }
+  const clearSelectedUser=()=>{
+    setSelectedUser([]);
+  }
   const selection={
-      selectable:(user:UserDetail)=>user.userRetire==="yes",
+      selectable:(user:UserDetail)=>user.userRetire,
       selectableMessage:(selectable:boolean,user:UserDetail)=>
         !selectable
           ? `${user.userName} is selected`
@@ -472,7 +481,7 @@ export const DetailForm: React.FC = () => {
       
 
   }
-  console.log(usersDetails.map(user => user.userRetire));
+ 
   return (
     <>
       <EuiFlexGroup
@@ -566,23 +575,25 @@ export const DetailForm: React.FC = () => {
       {flyout}
       {editFlyout}
       <EuiSpacer size="xl" />
-      <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
-        <EuiFlexItem grow={2}>
-          <EuiSwitch
-            label="User Selection"
-            checked={switchUser}
-            onChange={handleSwitchUserSelection}
-          />
-        </EuiFlexItem>
-        <EuiFlexItem grow={false}>
+      <EuiFlexGroup direction="column">
+      <EuiFlexItem>
           <CommonSearchField
             placeholder="Search by name"
             value={searchName}
             isClearable={isClearable}
             onChange={handleChangeSearchName}
             onSearch={() => handleSearchUserName(searchName)}
+            fullWidth={true}
           />
         </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiSwitch
+            label="User Selection"
+            checked={switchUser}
+            onChange={handleSwitchUserSelection}
+          />
+        </EuiFlexItem>
+        
         {/* <EuiFlexItem grow={false}>
           <div>
             <CommonButton
@@ -604,7 +615,7 @@ export const DetailForm: React.FC = () => {
             columns={columns}
             pagination={pagination}
             onChange={handlePageChange}
-            selection={selection}
+            selection={switchUser ? selection : undefined}
           />
         </EuiFlexItem>
       </EuiFlexGroup>

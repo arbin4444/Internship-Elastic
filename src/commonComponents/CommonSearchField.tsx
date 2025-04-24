@@ -7,6 +7,7 @@ interface CommonSearchFieldProps {
   isClearable: boolean;
   onChange:any;
   onSearch: any;
+  fullWidth:boolean;
 }
 
 export const CommonSearchField: React.FC<CommonSearchFieldProps> = ({
@@ -15,6 +16,7 @@ export const CommonSearchField: React.FC<CommonSearchFieldProps> = ({
   isClearable,
   onChange,
   onSearch,
+  fullWidth,
 }) => {
   return (
     <>
@@ -24,6 +26,7 @@ export const CommonSearchField: React.FC<CommonSearchFieldProps> = ({
         isClearable={isClearable}
         onChange={onChange}
         onSearch={onSearch}
+        fullWidth={fullWidth}
       />
     </>
   );
