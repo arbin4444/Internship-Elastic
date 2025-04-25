@@ -7,7 +7,7 @@ import {
   EuiText,
   useGeneratedHtmlId,
 } from "@elastic/eui";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CommonInputField } from "../commonComponents/CommonInputField";
 import { CommonComboBox } from "../commonComponents/CommonComboBox";
 import { CommonCheckBox } from "../commonComponents/CommonCheckBox";
@@ -446,30 +446,36 @@ export const DetailForm: React.FC = () => {
     setSearchName(e.target.value);
   };
 
-  const handleSearchUserName = (searchName: string) => {
-    if (!searchName.trim()) {
-      setFilteredData(null);
-      return;
-    }
-    const filterSearchedName = usersDetails.filter(
-      (name) => name.userName === searchName
-    );
-    setFilteredData([...filterSearchedName]);
-  };
+  useEffect(()=>{
+    const handleSearchUserName = setTimeout(() => {
+      if (!searchName.trim()) {
+        setFilteredData(null);
+        return;
+      }
+      const filterSearchedName = usersDetails.filter(
+        (name) => name.userName === searchName
+      );
+      console.log("this is filter name",filterSearchedName);
+      setFilteredData([...filterSearchedName]);
+    },1000);
+    return ()=> clearTimeout(handleSearchUserName);
+  },[searchName,usersDetails]);
 
+  
+  
   //For handling selection
   const onSelectionChange=(selectedUser:UserDetail[])=>{
       setSelectedUser(selectedUser);
 
   };
-  const getUserRetired=() => usersDetails.filter((user)=> user.userRetire);
+  // const getUserRetired=() => usersDetails.filter((user)=> user.userRetire);
   
-  const selectRetiredUsers=()=>{
-    setSelectedUser(getUserRetired());
-  }
-  const clearSelectedUser=()=>{
-    setSelectedUser([]);
-  }
+  // const selectRetiredUsers=()=>{
+  //   setSelectedUser(getUserRetired());
+  // }
+  // const clearSelectedUser=()=>{
+  //   setSelectedUser([]);
+  // }
   const selection={
       selectable:(user:UserDetail)=>user.userRetire,
       selectableMessage:(selectable:boolean,user:UserDetail)=>
@@ -582,7 +588,7 @@ export const DetailForm: React.FC = () => {
             value={searchName}
             isClearable={isClearable}
             onChange={handleChangeSearchName}
-            onSearch={() => handleSearchUserName(searchName)}
+            // onSearch={() => handleSearchUserName(searchName)}
             fullWidth={true}
           />
         </EuiFlexItem>

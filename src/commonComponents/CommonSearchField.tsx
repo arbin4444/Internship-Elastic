@@ -6,7 +6,7 @@ interface CommonSearchFieldProps {
   value: string;
   isClearable: boolean;
   onChange:any;
-  onSearch: any;
+  onSearch?: any;
   fullWidth:boolean;
 }
 
